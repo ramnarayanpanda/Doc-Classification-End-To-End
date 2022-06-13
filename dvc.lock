@@ -1,0 +1,67 @@
+schema: '2.0'
+stages:
+  stage_01_data_prepare:
+    cmd: python src/stage_01_data_prepare.py --config=config/config.yaml --params=params.yaml
+    deps:
+    - path: config/config.yaml
+      md5: f0657adf6fdfd544536d46317b2a882e
+      size: 420
+    - path: params.yaml
+      md5: d8f0037cdd1c9a13b009b9527347a6ff
+      size: 1057
+    - path: src/stage_01_data_prepare.py
+      md5: 6c597baba60555abcb92e6d8ae275ca1
+      size: 5172
+    - path: src/utils/common.py
+      md5: 78bb606a79ad08a91797d89af309749b
+      size: 1639
+    - path: src/utils/preprocess.py
+      md5: 98cd206325a12e089f4d406fe91d5802
+      size: 4702
+    outs:
+    - path: preprocessed_data/test
+      md5: 062d9926bffc5a317cf84cf8c8b67e47.dir
+      size: 995710
+      nfiles: 668
+    - path: preprocessed_data/test_file_names.csv
+      md5: f2c99b4b8ea32e63a4b26a5e1ef7ee1f
+      size: 11679
+    - path: preprocessed_data/train
+      md5: bb0234153276aed78d6e650ef8b96b33.dir
+      size: 2279062
+      nfiles: 1557
+    - path: preprocessed_data/train_file_names.csv
+      md5: 6206e2bd444c04259e50a9c367153b3a
+      size: 27198
+  stage_02_save_features:
+    cmd: python src/stage_02_save_features.py --config=config/config.yaml --params=params.yaml
+    deps:
+    - path: config/config.yaml
+      md5: f0657adf6fdfd544536d46317b2a882e
+      size: 420
+    - path: params.yaml
+      md5: d8f0037cdd1c9a13b009b9527347a6ff
+      size: 1057
+    - path: preprocessed_data/train
+      md5: bb0234153276aed78d6e650ef8b96b33.dir
+      size: 2279062
+      nfiles: 1557
+    - path: src/stage_02_save_features.py
+      md5: bd9768ac1d9aed214f83a176fa6cff42
+      size: 2675
+    - path: src/utils/common.py
+      md5: 78bb606a79ad08a91797d89af309749b
+      size: 1639
+    - path: src/utils/featurization.py
+      md5: 0e760072a560316b7cf31d774b0eb821
+      size: 2321
+    outs:
+    - path: encoders/count_encoder.pk
+      md5: 4f13f6b12499c960bb73203c35017a2b
+      size: 277858
+    - path: encoders/label_encoder.pk
+      md5: 7e71eef4a7e982111b33ac71146e14db
+      size: 295
+    - path: encoders/tfidf_encoder.pk
+      md5: d05d97d69a603681cc1a623a39d55cd5
+      size: 614067
