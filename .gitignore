@@ -127,4 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/preprocessed_data
+
+
+# push mlruns except the model weights
+/mlruns/*/*/artifacts/model/data/*
+
+
+preprocessed_data
+preprocessed_data/
+source_data
+source_data/

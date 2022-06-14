@@ -48,7 +48,7 @@ models:
       n_layers: 2
       embedding_dim: 100 
       drop_proba: 0.7
-      epochs: 5 
+      epochs: 1
       batch_first: True 
 
 
@@ -59,3 +59,6 @@ models:
       dims: 200
       n_grams: 11
       max_ns: 9
+
+  
+  DistilBert:

@@ -1,5 +1,8 @@
 stages:
 
+  stage_00_commit_everything:
+    cmd: git commit -m "commiting before dvc run"
+
   stage_01_data_prepare:
     cmd: python src/stage_01_data_prepare.py --config=config/config.yaml --params=params.yaml
     deps: 
@@ -24,9 +27,9 @@ stages:
       - params.yaml
       - preprocessed_data/train
     outs:
-      - encoders/count_encoder.pk 
-      - encoders/label_encoder.pk 
-      - encoders/tfidf_encoder.pk 
+      - encoders/count_encoder.p
+      - encoders/label_encoder.p 
+      - encoders/tfidf_encoder.p 
 
   stage_03_train_ML:
     cmd: python src/stage_03_train_ML.py --config=config/config.yaml --params=params.yaml
@@ -34,11 +37,40 @@ stages:
       - src/stage_03_train_ML.py
       - src/utils/data_loader.py 
       - src/utils/metrics_plots.py 
-      - encoders/count_encoder.pk 
-      - encoders/label_encoder.pk 
-      - encoders/tfidf_encoder.pk 
+      - encoders/count_encoder.p 
+      - encoders/label_encoder.p 
+      - encoders/tfidf_encoder.p 
       - config/config.yaml
       - params.yaml
       - preprocessed_data/train
       - preprocessed_data/test 
+
+  stage_03_train_DL:
+    cmd: python src/stage_03_train_DL.py --config=config/config.yaml --params=params.yaml
+    deps:
+      - src/stage_03_train_DL.py
+      - src/utils/data_loader.py
+      - src/utils/metrics_plots.py
+      - encoders/count_encoder.p
+      - encoders/label_encoder.p
+      - encoders/tfidf_encoder.p
+      - config/config.yaml
+      - params.yaml
+      - preprocessed_data/train
+      - preprocessed_data/test
+
+  stage_03_train_FastText:
+    cmd: python src/stage_03_train_FastText.py --config=config/config.yaml --params=params.yaml
+    deps:
+      - src/stage_03_train_FastText.py
+      - src/utils/data_loader.py
+      - src/utils/metrics_plots.py
+      - encoders/count_encoder.p
+      - encoders/label_encoder.p
+      - encoders/tfidf_encoder.p
+      - config/config.yaml
+      - params.yaml
+      - preprocessed_data/train
+      - preprocessed_data/test
     
+  

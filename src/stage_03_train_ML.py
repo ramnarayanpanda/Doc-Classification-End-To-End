@@ -108,8 +108,8 @@ def stacking_classifier(config_path, param_path, X_train, y_train, X_test, y_tes
     metric_dct = get_metrics(y_test, y_pred, unique_categories)
     
     param_dct = clf.get_params()
-    param_dct.update({'model_name': 'Random_forest + Naive_bayes Stacking'})
-    track_params = ['rf__n_estimators', 'rf__max_depth', 'rf__min_samples_split', 'rf__max_leaf_nodes', 
+    param_dct.update({'model_name': 'Stacking RF+MNB'})
+    track_params = ['model_name', 'rf__n_estimators', 'rf__max_depth', 'rf__min_samples_split', 'rf__max_leaf_nodes', 
                     'rf__max_samples', 'mnb__alpha', 'mnb__fit_prior']
         
     whole_model_name = param_dct['model_name'] 

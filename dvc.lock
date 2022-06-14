@@ -4,64 +4,171 @@ stages:
     cmd: python src/stage_01_data_prepare.py --config=config/config.yaml --params=params.yaml
     deps:
     - path: config/config.yaml
-      md5: f0657adf6fdfd544536d46317b2a882e
-      size: 420
+      md5: 35315035b6b338c504086226e806d7c1
+      size: 492
     - path: params.yaml
-      md5: d8f0037cdd1c9a13b009b9527347a6ff
-      size: 1057
+      md5: c17b57973516cd1fa6aee966c0704bba
+      size: 1215
     - path: src/stage_01_data_prepare.py
-      md5: 6c597baba60555abcb92e6d8ae275ca1
-      size: 5172
+      md5: 92dfcdf7c4398cd52e92ae7ac2e4f242
+      size: 5174
     - path: src/utils/common.py
-      md5: 78bb606a79ad08a91797d89af309749b
+      md5: 262dc6feac1247866bd35944e15e19ea
       size: 1639
     - path: src/utils/preprocess.py
       md5: 98cd206325a12e089f4d406fe91d5802
       size: 4702
     outs:
     - path: preprocessed_data/test
-      md5: 062d9926bffc5a317cf84cf8c8b67e47.dir
-      size: 995710
-      nfiles: 668
+      md5: 08b2b1adb479eb874e8f1a8050a7685e.dir
+      size: 680279
+      nfiles: 445
     - path: preprocessed_data/test_file_names.csv
-      md5: f2c99b4b8ea32e63a4b26a5e1ef7ee1f
-      size: 11679
+      md5: 1335654b858ff817e770894faf8e6451
+      size: 7786
     - path: preprocessed_data/train
-      md5: bb0234153276aed78d6e650ef8b96b33.dir
-      size: 2279062
-      nfiles: 1557
+      md5: 2db682bad85b359b194f9f9c38902b61.dir
+      size: 2594493
+      nfiles: 1780
     - path: preprocessed_data/train_file_names.csv
-      md5: 6206e2bd444c04259e50a9c367153b3a
-      size: 27198
+      md5: 4a94da50143212cbace114270ed53d2f
+      size: 31091
   stage_02_save_features:
     cmd: python src/stage_02_save_features.py --config=config/config.yaml --params=params.yaml
     deps:
     - path: config/config.yaml
-      md5: f0657adf6fdfd544536d46317b2a882e
-      size: 420
+      md5: 35315035b6b338c504086226e806d7c1
+      size: 492
     - path: params.yaml
-      md5: d8f0037cdd1c9a13b009b9527347a6ff
-      size: 1057
+      md5: c17b57973516cd1fa6aee966c0704bba
+      size: 1215
     - path: preprocessed_data/train
-      md5: bb0234153276aed78d6e650ef8b96b33.dir
-      size: 2279062
-      nfiles: 1557
+      md5: 2db682bad85b359b194f9f9c38902b61.dir
+      size: 2594493
+      nfiles: 1780
     - path: src/stage_02_save_features.py
-      md5: bd9768ac1d9aed214f83a176fa6cff42
-      size: 2675
+      md5: 42d591282473b44df3fdb99b5a2d15b9
+      size: 2853
     - path: src/utils/common.py
-      md5: 78bb606a79ad08a91797d89af309749b
+      md5: 262dc6feac1247866bd35944e15e19ea
       size: 1639
     - path: src/utils/featurization.py
-      md5: 0e760072a560316b7cf31d774b0eb821
-      size: 2321
+      md5: 302e280144d1e0d8564df63ec44b3513
+      size: 2601
     outs:
-    - path: encoders/count_encoder.pk
-      md5: 4f13f6b12499c960bb73203c35017a2b
-      size: 277858
-    - path: encoders/label_encoder.pk
-      md5: 7e71eef4a7e982111b33ac71146e14db
-      size: 295
-    - path: encoders/tfidf_encoder.pk
-      md5: d05d97d69a603681cc1a623a39d55cd5
-      size: 614067
+    - path: encoders/count_encoder.p
+      md5: cf50b94bc38de36b3e72af9c17b84e67
+      size: 290797
+    - path: encoders/label_encoder.p
+      md5: 7d0e1467be8a00f3cec3d4244b624f0e
+      size: 296
+    - path: encoders/tfidf_encoder.p
+      md5: 95d6f9ed8d303d3f898d447193aa514c
+      size: 642235
+  stage_03_train_FastText:
+    cmd: python src/stage_03_train_FastText.py --config=config/config.yaml --params=params.yaml
+    deps:
+    - path: config/config.yaml
+      md5: 35315035b6b338c504086226e806d7c1
+      size: 492
+    - path: encoders/count_encoder.p
+      md5: cf50b94bc38de36b3e72af9c17b84e67
+      size: 290797
+    - path: encoders/label_encoder.p
+      md5: 7d0e1467be8a00f3cec3d4244b624f0e
+      size: 296
+    - path: encoders/tfidf_encoder.p
+      md5: 95d6f9ed8d303d3f898d447193aa514c
+      size: 642235
+    - path: params.yaml
+      md5: c17b57973516cd1fa6aee966c0704bba
+      size: 1215
+    - path: preprocessed_data/test
+      md5: 08b2b1adb479eb874e8f1a8050a7685e.dir
+      size: 680279
+      nfiles: 445
+    - path: preprocessed_data/train
+      md5: 2db682bad85b359b194f9f9c38902b61.dir
+      size: 2594493
+      nfiles: 1780
+    - path: src/stage_03_train_FastText.py
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: src/utils/data_loader.py
+      md5: a153aa240c26311583260b0b062e6a15
+      size: 5307
+    - path: src/utils/metrics_plots.py
+      md5: 1025c4cb81d0eba856f1de284f81326c
+      size: 4938
+  stage_03_train_ML:
+    cmd: python src/stage_03_train_ML.py --config=config/config.yaml --params=params.yaml
+    deps:
+    - path: config/config.yaml
+      md5: 35315035b6b338c504086226e806d7c1
+      size: 492
+    - path: encoders/count_encoder.p
+      md5: cf50b94bc38de36b3e72af9c17b84e67
+      size: 290797
+    - path: encoders/label_encoder.p
+      md5: 7d0e1467be8a00f3cec3d4244b624f0e
+      size: 296
+    - path: encoders/tfidf_encoder.p
+      md5: 95d6f9ed8d303d3f898d447193aa514c
+      size: 642235
+    - path: params.yaml
+      md5: c17b57973516cd1fa6aee966c0704bba
+      size: 1215
+    - path: preprocessed_data/test
+      md5: 08b2b1adb479eb874e8f1a8050a7685e.dir
+      size: 680279
+      nfiles: 445
+    - path: preprocessed_data/train
+      md5: 2db682bad85b359b194f9f9c38902b61.dir
+      size: 2594493
+      nfiles: 1780
+    - path: src/stage_03_train_ML.py
+      md5: 000e4ee33c4c14af82d18703d46e8252
+      size: 8323
+    - path: src/utils/data_loader.py
+      md5: a153aa240c26311583260b0b062e6a15
+      size: 5307
+    - path: src/utils/metrics_plots.py
+      md5: 1025c4cb81d0eba856f1de284f81326c
+      size: 4938
+  stage_00_commit_everything:
+    cmd: git commit -m "commiting before dvc run"
+  stage_03_train_DL:
+    cmd: python src/stage_03_train_DL.py --config=config/config.yaml --params=params.yaml
+    deps:
+    - path: config/config.yaml
+      md5: 35315035b6b338c504086226e806d7c1
+      size: 492
+    - path: encoders/count_encoder.p
+      md5: cf50b94bc38de36b3e72af9c17b84e67
+      size: 290797
+    - path: encoders/label_encoder.p
+      md5: 7d0e1467be8a00f3cec3d4244b624f0e
+      size: 296
+    - path: encoders/tfidf_encoder.p
+      md5: 95d6f9ed8d303d3f898d447193aa514c
+      size: 642235
+    - path: params.yaml
+      md5: c17b57973516cd1fa6aee966c0704bba
+      size: 1215
+    - path: preprocessed_data/test
+      md5: 08b2b1adb479eb874e8f1a8050a7685e.dir
+      size: 680279
+      nfiles: 445
+    - path: preprocessed_data/train
+      md5: 2db682bad85b359b194f9f9c38902b61.dir
+      size: 2594493
+      nfiles: 1780
+    - path: src/stage_03_train_DL.py
+      md5: 81f8babf1705f4451bfb2512b0141f08
+      size: 10520
+    - path: src/utils/data_loader.py
+      md5: a153aa240c26311583260b0b062e6a15
+      size: 5307
+    - path: src/utils/metrics_plots.py
+      md5: 1025c4cb81d0eba856f1de284f81326c
+      size: 4938

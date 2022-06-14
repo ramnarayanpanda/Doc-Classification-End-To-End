@@ -89,8 +89,8 @@ def save_graphs_DL(metric_dct, whole_model_name, unique_categories,
     ax = sns.heatmap(df_cm, annot=True, fmt="d")
     ax.yaxis.set_ticklabels(ax.yaxis.get_ticklabels(), rotation=0, ha='right', fontsize=15)
     ax.xaxis.set_ticklabels(ax.xaxis.get_ticklabels(), rotation=45, ha='right', fontsize=15)
-    ax.y_label('True label')
-    ax.x_label('Predicted label')
+    ax.set_ylabel('True label')
+    ax.set_xlabel('Predicted label')
     
     return ({'name':'ConfusionMatrix_' + whole_model_name + '.png', 'fig':fig1}, 
             {'name':'Accuracy&Loss Graph' + whole_model_name + '.png', 'fig':fig})

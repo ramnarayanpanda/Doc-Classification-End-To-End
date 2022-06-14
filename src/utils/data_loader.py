@@ -78,13 +78,14 @@ class TransformData(object):
 class DocClassificationDataset(Dataset):
     
     # this file path is processed_data/train(test)
-    def __init__(self, config_path, param_path, csv_file_name, file_path, 
+    def __init__(self, config_path, param_path, csv_file_name, file_path, is_transform=True, 
                  data_type='train', model_type='DL', seq_length=350):
         self.file_path = file_path
         self.file_df = pd.read_csv(os.path.join(file_path, csv_file_name))
         self.data_type = data_type
         self.model_type = model_type
         self.seq_length = seq_length
+        self.is_transform = is_transform
         
         self.transform = TransformData(config_path, param_path, model_type=model_type, seq_length=seq_length)
                 
@@ -111,7 +112,9 @@ class DocClassificationDataset(Dataset):
             
         sample = {'text':text_features, 'class':class_features}
         
-        sample = self.transform(sample)
+        # for BERT we will use prebuilt tokenizer, so make self.is_transform=False in that case
+        if self.is_transform:
+            sample = self.transform(sample)
         
         return sample
     
