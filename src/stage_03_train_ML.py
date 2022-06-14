@@ -39,6 +39,7 @@ def naive_bayes_model(config_path, param_path, X_train, y_train, X_test, y_test)
     
     param_dct = mnb.get_params()
     param_dct.update({'model_name': 'Naive Bayes'})
+    track_params = ['model_name', 'alpha', 'fit_prior']
         
     whole_model_name = param_dct['model_name'] 
     test_accuracy = metric_dct['accuracy']
@@ -48,7 +49,7 @@ def naive_bayes_model(config_path, param_path, X_train, y_train, X_test, y_test)
     
     del metric_dct['confusion_matrix']
     
-    return {'params':param_dct , 
+    return {'params':{key:param_dct[key] for key in track_params}, 
             'metrics': metric_dct, 
             'artifacts':graphs}
     
@@ -64,11 +65,13 @@ def rf_model(config_path, param_path, X_train, y_train, X_test, y_test):
     rf.fit(X_train, y_train) 
     y_pred = rf.predict(X_test) 
         
-    unique_categories = [i for i in range(len(config['artifacts']['INPUT_CLASSES']))]
+    unique_categories = [i for i in range(len(config['artifacts']['INPUT_CLASSES']))]    
     metric_dct = get_metrics(y_test, y_pred, unique_categories)
     
     param_dct = rf.get_params()
     param_dct.update({'model_name': 'Random Forest'})
+    track_params = ['model_name', 'n_estimators', 'max_depth', 'min_samples_split', 
+                    'max_leaf_nodes', 'max_samples']
         
     whole_model_name = param_dct['model_name'] 
     test_accuracy = metric_dct['accuracy']
@@ -78,7 +81,7 @@ def rf_model(config_path, param_path, X_train, y_train, X_test, y_test):
     
     del metric_dct['confusion_matrix']
     
-    return {'params': rf.get_params(), 
+    return {'params':{key:param_dct[key] for key in track_params}, 
             'metrics': metric_dct, 
             'artifacts':graphs}
 
@@ -106,6 +109,8 @@ def stacking_classifier(config_path, param_path, X_train, y_train, X_test, y_tes
     
     param_dct = clf.get_params()
     param_dct.update({'model_name': 'Random_forest + Naive_bayes Stacking'})
+    track_params = ['rf__n_estimators', 'rf__max_depth', 'rf__min_samples_split', 'rf__max_leaf_nodes', 
+                    'rf__max_samples', 'mnb__alpha', 'mnb__fit_prior']
         
     whole_model_name = param_dct['model_name'] 
     test_accuracy = metric_dct['accuracy']
@@ -115,7 +120,7 @@ def stacking_classifier(config_path, param_path, X_train, y_train, X_test, y_tes
     
     del metric_dct['confusion_matrix']
     
-    return {'params': clf.get_params(), 
+    return {'params': {key:param_dct[key] for key in track_params}, 
             'metrics': metric_dct, 
             'artifacts':graphs}
 
@@ -170,13 +175,14 @@ def train(config_path, param_path):
     
     for model_outputs in [naive_bayes_outputs, rf_outputs, stacking_outputs]:
         create_directory(dirs=[temp_dir])
-        model_outputs['artifacts']['fig'].savefig(os.path.join(temp_dir + model_outputs['artifacts']['name']))
+        image_path = os.path.join(temp_dir, model_outputs['artifacts']['name'])
+        model_outputs['artifacts']['fig'].savefig(image_path)
         
         with mlflow.start_run():
             mlflow.log_metrics(model_outputs['metrics'])
             mlflow.log_params(model_outputs['params'])
             mlflow.sklearn.log_model(model_outputs['artifacts']['model'], 'model')
-            mlflow.log_artifact(os.path.join(temp_dir + model_outputs['artifacts']['name']), 'graphs')
+            mlflow.log_artifact(image_path, 'graphs')
             
         shutil.rmtree(os.path.join(temp_dir))
         

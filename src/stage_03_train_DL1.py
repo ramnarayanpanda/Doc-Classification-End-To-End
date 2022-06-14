@@ -87,6 +87,7 @@ def train(config_path, param_path):
     unique_categories = [i for i in range(len(config['artifacts']['INPUT_CLASSES']))]
     
     
+    print(f"\n>>>>>>>>>>>>>>>>{device}<<<<<<<<<<<<<<<<<<<<<\n")
     
         
     train_loader = doc_classifier_dataloader(config_path, param_path, 
@@ -173,7 +174,7 @@ def train(config_path, param_path):
     for i in targets:
         true_labels.append(i.cpu())
         
-    metric_dct = get_metrics(true_labels, pred_labels)
+    metric_dct = get_metrics(true_labels, pred_labels, unique_categories)
     conf_mat_plot, acc_loss_plot = save_graphs_DL(metric_dct, whole_model_name, unique_categories,
                                                   train_loss_perEpoch, test_loss_perEpoch, 
                                                   train_accuracy_perEpoch, test_accuracy_perEpoch)    
@@ -181,7 +182,7 @@ def train(config_path, param_path):
     model_params = {}
     for name, param in model.named_parameters():
         model_params[name] = param.data
-    model_params['model_name'] = ('' if bidirectional == False else 'B') + model_type
+    model_params['model_name'] = ('' if bidirectional == False else 'B') + model_name
     
     del metric_dct['confusion_matrix']
     

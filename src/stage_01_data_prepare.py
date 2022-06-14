@@ -101,7 +101,7 @@ def get_data(config_path, param_path):
     test_data.apply(write_file, axis=1)         
     print('\nget data done\n')
 
-
+  
 
 
 if __name__ == '__main__':

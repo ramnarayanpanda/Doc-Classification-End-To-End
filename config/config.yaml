@@ -1,10 +1,10 @@
 artifacts:
   ENCODERS:
-    encoder_dir_name: encoders
     count_encoder: count_encoder.p
+    encoder_dir_name: encoders
     label_encoder: label_encoder.p
+    one_hot_encoder: one_hot_encoder.p
     tfidf_encoder: tfidf_encoder.p
-    one_hot_encoder: one_hot_encoder.p 
   INPUT_CLASSES:
   - business
   - entertainment
@@ -13,6 +13,6 @@ artifacts:
   - tech
   PREPROCESSED_DATA_DIR: preprocessed_data
   SOURCE_DATA_DIR: source_data
+  TEMP_MLFLOW_ARTIFACTS_DIR: temp
   TEST_FILE_NAMES_CSV: test_file_names.csv
   TRAIN_FILE_NAMES_CSV: train_file_names.csv
-  TEMP_MLFLOW_ARTIFACTS_DIR: temp

@@ -1,0 +1,2 @@
+RandomForestClassifier(max_depth=3, max_leaf_nodes=11, min_samples_split=3,
+                       n_estimators=400, random_state=42)

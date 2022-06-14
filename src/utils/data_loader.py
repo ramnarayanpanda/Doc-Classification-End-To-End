@@ -113,7 +113,6 @@ class DocClassificationDataset(Dataset):
         
         sample = self.transform(sample)
         
-        # print('ttttttttttttttttttttttttttttttttttttttttt', type(sample))
         return sample
     
     
