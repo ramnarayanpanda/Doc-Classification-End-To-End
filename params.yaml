@@ -6,7 +6,8 @@ preprocess:
   summy: False
   stem_type: Snow Ball
   lemm_type: Word Net
-  test_size: 0.3 
+  test_size: 0.2
+  valid_Size: 0.15 
 
 feature_extraction: 
   params:
@@ -18,18 +19,18 @@ models:
   ML: 
     naive_bayes: 
       params: 
-        alpha: 0.1
+        alpha: 0.7
         fit_prior: True 
     random_forest:  
       params:  
-        n_estimators: 300
-        max_depth: 9
-        min_samples_split: 7 
+        n_estimators: 400
+        max_depth: 3
+        min_samples_split: 3
         random_state: 42
         max_leaf_nodes: 11
     svc: 
       params: 
-        C: 0.7 
+        C: 0.2
         degree: 4
         random_state: 42 
 
@@ -37,20 +38,21 @@ models:
     params:  
       model_name: LSTM 
       bidirectional: True 
-      take_all_outputs: True 
-      word_embedding: GloVe 
-      seq_length: 350 
+      take_all_layers_output: True 
+      #word_embedding: GloVe 
+      seq_length: 300
       batch_size: 32 
-      output_size: 5     # perfect example to explore more about reading one yaml inside another
+      output_size: 20     # perfect example to explore more about reading one yaml inside another
       hidden_dim: 512 
-      lr: 0.0001
-      n_layers: 8 
+      lr: 0.001
+      n_layers: 2
       embedding_dim: 100 
-      drop_prob: 0.7
-      epoch: 5  
+      drop_proba: 0.7
+      epochs: 5 
+      batch_first: True 
+
 
       
-
   FastText: 
     params: 
       epochs: 20

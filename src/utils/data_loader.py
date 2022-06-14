@@ -22,41 +22,40 @@ class TransformData(object):
         self.label_encoder = read_pickle_file(os.path.join(self.encoders_dir, config['artifacts']['ENCODERS']['label_encoder']))
         self.count_encoder = read_pickle_file(os.path.join(self.encoders_dir, config['artifacts']['ENCODERS']['count_encoder']))
         self.tfidf_encoder = read_pickle_file(os.path.join(self.encoders_dir, config['artifacts']['ENCODERS']['tfidf_encoder']))
+        self.one_hot_encoder = read_pickle_file(os.path.join(self.encoders_dir, config['artifacts']['ENCODERS']['one_hot_encoder']))
         
     def apply_feature_extraction(self, sample):
         # print("\n\nentered feature extractor successfully")
         
         if self.model_type=='DL':
             tokenizer = RegexpTokenizer(r'\w+')
-            doc_of_ints = []
-            for line in sample['text']:
-                doc_of_ints.append([self.count_encoder.get(word, 0) for word in tokenizer.tokenize(line)])
-            sample['text'] = doc_of_ints
+            sample['text'] = [self.count_encoder.get(word, 0) for word in tokenizer.tokenize(sample['text'])]
+            # print("\n\n", sample['class'], "\n\n")
+            
+            # sample['class'] = self.one_hot_encoder.transform([[sample['class']]]).todense()
+            
         elif self.model_type=='ML':
             sample['text'] = self.tfidf_encoder.transform([sample['text']]).todense()
         sample['class'] = self.label_encoder.transform([sample['class']])[0]
+        
         
         # print(type(sample['text']), sample['text'].shape, type(sample['class']))
         
         # print("\n\napplied feature extractor successfully")
         
-        return sample 
+        return  sample
             
     def apply_padding(self, sample):
-        features = np.zeros((len(sample['text']), self.seq_length), dtype=int)
-
-        for i, doc in enumerate(sample['text']):
-            review_len = len(doc)
-            if review_len <= self.seq_length:
-                zeroes = list(np.zeros(self.seq_length - review_len))
-                new = zeroes + doc
-            elif review_len > self.seq_length:
-                new = doc[0:self.seq_length]
-            features[i, :] = np.array(new)
-
-        sample['text'] = features
+        text_len = len(sample['text'])
+        if text_len <= self.seq_length:
+            zeroes = list(np.zeros(self.seq_length - text_len))
+            new = zeroes + sample['text']
+        elif text_len > self.seq_length:
+            new = sample['text'][0:self.seq_length]
+        sample['text'] = new
         
         # print(f"applied padding successfully{features.shape}\n\n")
+        # return (sample['text'], sample['class']) 
         return sample 
         
         
@@ -113,7 +112,8 @@ class DocClassificationDataset(Dataset):
         sample = {'text':text_features, 'class':class_features}
         
         sample = self.transform(sample)
-            
+        
+        # print('ttttttttttttttttttttttttttttttttttttttttt', type(sample))
         return sample
     
     
@@ -122,12 +122,13 @@ class DocClassificationDataset(Dataset):
     
 
 def doc_classifier_dataloader(config_path, param_path, csv_file_name, file_path, 
-                              data_type='train', model_type='DL', seq_length=350, batch_size=6):
+                              data_type='train', model_type='DL', seq_length=350, batch_size=32):
     
     classification_dataset = DocClassificationDataset(config_path, param_path, 
                                                       csv_file_name, file_path,
                                                       data_type=data_type, model_type=model_type, 
-                                                      seq_length=350) 
+                                                      seq_length=seq_length) 
     
-    dataloader = DataLoader(classification_dataset, batch_size=batch_size, shuffle=True, num_workers=0, collate_fn=lambda x: x )
+    dataloader = DataLoader(classification_dataset, batch_size=batch_size, shuffle=True, 
+                            num_workers=0, collate_fn=lambda x: x, drop_last=True)
     return dataloader

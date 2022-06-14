@@ -37,11 +37,13 @@ def save_feature_encoders_to_artifacts(config_path, param_path):
     label_encoder = feature_extractor.label_encoder
     count_encoder = feature_extractor.count_encoding
     tfidf_encoder = feature_extractor.tf_idf_encoding
+    one_hot_encoder = feature_extractor.one_hot_encoding 
     
     # saving 3 feature ecoders 
     save_pickle_file(os.path.join(encoders_dir, config['artifacts']['ENCODERS']['label_encoder']), label_encoder)
     save_pickle_file(os.path.join(encoders_dir, config['artifacts']['ENCODERS']['count_encoder']), count_encoder)
     save_pickle_file(os.path.join(encoders_dir, config['artifacts']['ENCODERS']['tfidf_encoder']), tfidf_encoder)
+    save_pickle_file(os.path.join(encoders_dir, config['artifacts']['ENCODERS']['one_hot_encoder']), one_hot_encoder)
 
 
 

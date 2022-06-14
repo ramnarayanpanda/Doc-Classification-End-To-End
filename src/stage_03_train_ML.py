@@ -36,15 +36,21 @@ def naive_bayes_model(config_path, param_path, X_train, y_train, X_test, y_test)
         
     unique_categories = [i for i in range(len(config['artifacts']['INPUT_CLASSES']))]
     metric_dct = get_metrics(y_test, y_pred, unique_categories)
-    metric_dct['model_name'] = 'Naive Bayes'
+    
+    param_dct = mnb.get_params()
+    param_dct.update({'model_name': 'Naive Bayes'})
         
-    whole_model_name = metric_dct['model_name'] 
+    whole_model_name = param_dct['model_name'] 
     test_accuracy = metric_dct['accuracy']
     graphs = save_graphs_ML(metric_dct, whole_model_name, unique_categories, test_accuracy)
     
-    return {'params': mnb.get_params(), 
+    graphs.update({'model': mnb})
+    
+    del metric_dct['confusion_matrix']
+    
+    return {'params':param_dct , 
             'metrics': metric_dct, 
-            'artifacts':{'model': mnb}.update(graphs)}
+            'artifacts':graphs}
     
 
 
@@ -60,15 +66,21 @@ def rf_model(config_path, param_path, X_train, y_train, X_test, y_test):
         
     unique_categories = [i for i in range(len(config['artifacts']['INPUT_CLASSES']))]
     metric_dct = get_metrics(y_test, y_pred, unique_categories)
-    metric_dct['model_name'] = 'Random_forest'
     
-    whole_model_name = metric_dct['model_name'] 
+    param_dct = rf.get_params()
+    param_dct.update({'model_name': 'Random Forest'})
+        
+    whole_model_name = param_dct['model_name'] 
     test_accuracy = metric_dct['accuracy']
     graphs = save_graphs_ML(metric_dct, whole_model_name, unique_categories, test_accuracy)
     
+    graphs.update({'model': rf})
+    
+    del metric_dct['confusion_matrix']
+    
     return {'params': rf.get_params(), 
             'metrics': metric_dct, 
-            'artifacts':{'model': rf}.update(graphs)}
+            'artifacts':graphs}
 
 
 
@@ -91,15 +103,21 @@ def stacking_classifier(config_path, param_path, X_train, y_train, X_test, y_tes
         
     unique_categories = [i for i in range(len(config['artifacts']['INPUT_CLASSES']))]
     metric_dct = get_metrics(y_test, y_pred, unique_categories)
-    metric_dct['model_name'] = 'Random_forest + Naive_bayes Stacking'
     
-    whole_model_name = metric_dct['model_name'] 
+    param_dct = clf.get_params()
+    param_dct.update({'model_name': 'Random_forest + Naive_bayes Stacking'})
+        
+    whole_model_name = param_dct['model_name'] 
     test_accuracy = metric_dct['accuracy']
     graphs = save_graphs_ML(metric_dct, whole_model_name, unique_categories, test_accuracy)
     
+    graphs.update({'model': clf})
+    
+    del metric_dct['confusion_matrix']
+    
     return {'params': clf.get_params(), 
             'metrics': metric_dct, 
-            'artifacts':{'model': clf}.update(graphs)}
+            'artifacts':graphs}
 
 
 
@@ -148,23 +166,22 @@ def train(config_path, param_path):
     stacking_outputs = stacking_classifier(config_path, param_path, X_train, y_train, X_test, y_test)
     
     temp_dir = config['artifacts']['TEMP_MLFLOW_ARTIFACTS_DIR']
-        
-    experiment_name = "MLModels"
-    experiment_id = mlflow.create_experiment(experiment_name)
+    
+    
     for model_outputs in [naive_bayes_outputs, rf_outputs, stacking_outputs]:
         create_directory(dirs=[temp_dir])
-        model_outputs['artifacts']['fig'].savefig(os.path.join(temp_dir + model_outputs['name']))
+        model_outputs['artifacts']['fig'].savefig(os.path.join(temp_dir + model_outputs['artifacts']['name']))
         
-        with mlflow.start_run(experiment_id=experiment_id):
-            mlflow.log_metrics(naive_bayes_outputs['metrics'])
-            mlflow.log_params(naive_bayes_outputs['params'])
-            mlflow.sklearn.log_model(naive_bayes_outputs['artifacts']['model'], 'model')
-            mlflow.log_artifact(os.path.join(temp_dir + model_outputs['name']), 'graphs')
+        with mlflow.start_run():
+            mlflow.log_metrics(model_outputs['metrics'])
+            mlflow.log_params(model_outputs['params'])
+            mlflow.sklearn.log_model(model_outputs['artifacts']['model'], 'model')
+            mlflow.log_artifact(os.path.join(temp_dir + model_outputs['artifacts']['name']), 'graphs')
             
         shutil.rmtree(os.path.join(temp_dir))
         
     
-    print('\n\n0.5 done\n\n')
+    print('\n\nML Training is done\n\n')
     
     
     

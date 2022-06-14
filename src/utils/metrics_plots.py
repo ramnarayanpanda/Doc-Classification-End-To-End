@@ -47,10 +47,10 @@ def save_graphs_ML(metric_dct, whole_model_name, unique_categories, test_accurac
 
 
 
-
+# valid_accuracy_perEpoch, valid_loss_perEpoch
 def save_graphs_DL(metric_dct, whole_model_name, unique_categories,
-                train_loss_perEpoch, valid_loss_perEpoch, test_loss_perEpoch,
-                train_accuracy_perEpoch, valid_accuracy_perEpoch, test_accuracy_perEpoch):
+                train_loss_perEpoch, test_loss_perEpoch,
+                train_accuracy_perEpoch, test_accuracy_perEpoch):
     
     header_text = whole_model_name + '\n' + \
                 'Test Accuracy= %.3f,  Precision= %.3f,  Recall= %.3f,  f1-Score= %.3f,  roc_auc_score= %.3f' % \
@@ -64,7 +64,7 @@ def save_graphs_DL(metric_dct, whole_model_name, unique_categories,
     ax2 = fig.add_subplot(122)
 
     ax1.plot(range(len(train_loss_perEpoch)), train_loss_perEpoch, '-g', label='train loss')
-    ax1.plot(range(len(valid_loss_perEpoch)), valid_loss_perEpoch, '-r', label='valid loss')
+    # ax1.plot(range(len(valid_loss_perEpoch)), valid_loss_perEpoch, '-r', label='valid loss')
     ax1.plot(range(len(test_loss_perEpoch)), test_loss_perEpoch, '-b', label='test loss')
     ax1.set_title("Loss Graph")
     ax1.set_xlabel("Epochs")
@@ -73,7 +73,7 @@ def save_graphs_DL(metric_dct, whole_model_name, unique_categories,
     ax1.grid()
 
     ax2.plot(range(len(train_accuracy_perEpoch)), train_accuracy_perEpoch, '-g', label='train accuracy')
-    ax2.plot(range(len(valid_accuracy_perEpoch)), valid_accuracy_perEpoch, '-r', label='valid accuracy')
+    # ax2.plot(range(len(valid_accuracy_perEpoch)), valid_accuracy_perEpoch, '-r', label='valid accuracy')
     ax2.plot(range(len(test_accuracy_perEpoch)), test_accuracy_perEpoch, '-b', label='test accuracy')
     ax2.set_title("Accuracy Graph")
     ax2.set_xlabel("Epochs")
@@ -92,8 +92,7 @@ def save_graphs_DL(metric_dct, whole_model_name, unique_categories,
     ax.y_label('True label')
     ax.x_label('Predicted label')
     
-    return {'confusion_matrix': {'name':'ConfusionMatrix_' + whole_model_name + '.png', 'fig':fig1}, 
-            'plots': {'name':'Accuracy&Loss Graph' + whole_model_name + '.png', 'fig':fig}
-            }
+    return ({'name':'ConfusionMatrix_' + whole_model_name + '.png', 'fig':fig1}, 
+            {'name':'Accuracy&Loss Graph' + whole_model_name + '.png', 'fig':fig})
     
     

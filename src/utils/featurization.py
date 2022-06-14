@@ -14,6 +14,7 @@ class FeatureExtractor:
         self.label_encoder = None
         self.count_encoding = None
         self.tf_idf_encoding = None
+        self.one_hot_encoding = None
         self.ngram_range = ngram_range
 
 
@@ -22,12 +23,18 @@ class FeatureExtractor:
         self.label_encode(data)
         self.count_features(data)
         self.tfidf_vectorizer(data[['text']], ngram_range=self.ngram_range)
+        self.one_hot_encode(data)
 
 
     def label_encode(self, data):
         """Label encodes different document categories"""
         self.label_encoder = LabelEncoder()
         self.label_encoder.fit(data[['class']])
+        
+    def one_hot_encode(self, data):
+        """Label encodes different document categories"""
+        self.one_hot_encoding = OneHotEncoder()
+        self.one_hot_encoding.fit(data[['class']])
 
 
     def count_features(self, data, is_plot=False):

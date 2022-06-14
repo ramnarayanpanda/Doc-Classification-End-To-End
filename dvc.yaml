@@ -27,3 +27,18 @@ stages:
       - encoders/count_encoder.pk 
       - encoders/label_encoder.pk 
       - encoders/tfidf_encoder.pk 
+
+  stage_03_train_ML:
+    cmd: python src/stage_03_train_ML.py --config=config/config.yaml --params=params.yaml
+    deps: 
+      - src/stage_03_train_ML.py
+      - src/utils/data_loader.py 
+      - src/utils/metrics_plots.py 
+      - encoders/count_encoder.pk 
+      - encoders/label_encoder.pk 
+      - encoders/tfidf_encoder.pk 
+      - config/config.yaml
+      - params.yaml
+      - preprocessed_data/train
+      - preprocessed_data/test 
+    
