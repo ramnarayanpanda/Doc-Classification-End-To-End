@@ -134,6 +134,5 @@ dmypy.json
 
 
 preprocessed_data
-preprocessed_data/
 source_data
-source_data/
+encoders

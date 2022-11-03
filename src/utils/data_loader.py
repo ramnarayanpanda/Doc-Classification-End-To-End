@@ -36,8 +36,11 @@ class TransformData(object):
             
         elif self.model_type=='ML':
             sample['text'] = self.tfidf_encoder.transform([sample['text']]).todense()
-        sample['class'] = self.label_encoder.transform([sample['class']])[0]
-        
+
+        try:
+            sample['class'] = self.label_encoder.transform([sample['class']])[0]
+        except: 
+            sample['class'] = None 
         
         # print(type(sample['text']), sample['text'].shape, type(sample['class']))
         
@@ -51,7 +54,7 @@ class TransformData(object):
             zeroes = list(np.zeros(self.seq_length - text_len))
             new = zeroes + sample['text']
         elif text_len > self.seq_length:
-            new = sample['text'][0:self.seq_length]
+            new = sample['text'][(text_len - self.seq_length):]
         sample['text'] = new
         
         # print(f"applied padding successfully{features.shape}\n\n")
@@ -103,8 +106,8 @@ class DocClassificationDataset(Dataset):
         text_features = read_txt_file(
                     os.path.join(
                         self.file_path, self.data_type,
-                        self.file_df.iloc[idx, 1], 
-                        self.file_df.iloc[idx, 0]
+                        str(self.file_df.iloc[idx, 1]), 
+                        str(self.file_df.iloc[idx, 0])
                     )
                 )
             

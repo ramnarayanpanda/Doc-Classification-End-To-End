@@ -34,6 +34,28 @@ models:
         degree: 3
         random_state: 42 
 
+  
+  multi_ML:
+    multi_ML_models: [naive_bayes, random_forest, svc]
+    naive_bayes: 
+      params: 
+        alpha: [0.1, 0.4, 0.8]
+        fit_prior: [True]
+    random_forest:  
+      params:  
+        n_estimators: [100, 300, 1000]
+        max_depth: [5, 11, 15]
+        min_samples_split: [5, 7, 13]
+        random_state: [42]
+        max_leaf_nodes: [5, 7, 17]
+    svc: 
+      params: 
+        C: [0.1, 0.5, 0.7]
+        degree: [2, 3]
+        random_state: [42] 
+
+
+
   DL:
     params:  
       model_name: LSTM 
@@ -62,3 +84,8 @@ models:
 
   
   DistilBert:
+    params:
+      epochs: 1
+      lr: 0.00005
+      batch_size: 32
+      model_name: distilbert-base-uncased

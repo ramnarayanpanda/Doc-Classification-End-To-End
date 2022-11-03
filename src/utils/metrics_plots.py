@@ -12,15 +12,15 @@ def get_metrics(y_true, y_pred, unique_categories):
     category_onehot = OneHotEncoder()
     category_onehot.fit_transform(pd.DataFrame(y_true))
     
-    # pred_onehot = category_onehot.transform(pd.DataFrame(y_pred)).todense()
-    # true_onehot = category_onehot.transform(pd.DataFrame(y_true)).todense()
+    pred_onehot = category_onehot.transform(pd.DataFrame(y_pred)).todense()
+    true_onehot = category_onehot.transform(pd.DataFrame(y_true)).todense()
     metric_dct = {'confusion_matrix': confusion_matrix(y_true, y_pred, labels=unique_categories),
                   'accuracy': accuracy_score(y_true, y_pred),
                   'precision': precision_score(y_true, y_pred, average='weighted'),
                   'recall': recall_score(y_true, y_pred, average='weighted'),
                   'f1-score': f1_score(y_true, y_pred, average='weighted'),
-                #   'roc_auc_score': roc_auc_score(true_onehot, pred_onehot, average='weighted', multi_class='ovr')
-                  'roc_auc_score': 80
+                  'roc_auc_score': roc_auc_score(true_onehot, pred_onehot, average='weighted', multi_class='ovr')
+                  # 'roc_auc_score': 80
                   }
     
     return metric_dct  
@@ -28,10 +28,10 @@ def get_metrics(y_true, y_pred, unique_categories):
 
 
 
-def save_graphs_ML(metric_dct, whole_model_name, unique_categories, test_accuracy):
+def save_graphs_ML(metric_dct, whole_model_name, unique_categories):
     header_text = whole_model_name + '\n' + \
                 'Test Accuracy= %.3f,  Precision= %.3f,  Recall= %.3f,  f1-Score= %.3f,  roc_auc_score= %.3f' % \
-                (test_accuracy, metric_dct['precision'], metric_dct['recall'], metric_dct['f1-score'], metric_dct['roc_auc_score'])
+                (metric_dct['accuracy'], metric_dct['precision'], metric_dct['recall'], metric_dct['f1-score'], metric_dct['roc_auc_score'])
                             
     # Saving the confusion matrix
     fig = plt.figure(figsize=(15, 18))

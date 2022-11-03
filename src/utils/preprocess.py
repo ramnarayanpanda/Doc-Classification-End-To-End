@@ -102,7 +102,8 @@ class Preprocessor:
             stemmer = LancasterStemmer()
 
         tokenizer = RegexpTokenizer(r'\w+')
-        text = ' '.join([stemmer.stem(word) for word in tokenizer.tokenize(text)])
+        text = [stemmer.stem(word) for word in tokenizer.tokenize(text)]
+        text = ' '.join([word for word in text if len(word)>2])
 
         return text
     

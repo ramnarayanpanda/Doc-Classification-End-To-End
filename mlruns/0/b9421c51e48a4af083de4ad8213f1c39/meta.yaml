@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Doc-Classification-End-To-End/mlruns/0/b9421c51e48a4af083de4ad8213f1c39/artifacts
+end_time: 1655330487098
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: b9421c51e48a4af083de4ad8213f1c39
+run_uuid: b9421c51e48a4af083de4ad8213f1c39
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1655330484641
+status: 3
+tags: []
+user_id: rampa

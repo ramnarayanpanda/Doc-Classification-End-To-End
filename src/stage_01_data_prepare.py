@@ -72,8 +72,8 @@ def get_data(config_path, param_path):
     X_train, X_test, y_train, y_test = train_test_split(file_names_df['file_name'], file_names_df['class'], 
                                                         test_size=params['preprocess']['test_size'], 
                                                         stratify=file_names_df['class'], random_state=42)
-    train_data = pd.concat((X_train, y_train), axis=1).sample(frac=1).reset_index(drop=True)
-    test_data = pd.concat((X_test, y_test), axis=1).sample(frac=1).reset_index(drop=True)
+    train_data = pd.concat((X_train, y_train), axis=1).sample(frac=1).reset_index(drop=True).astype(str)
+    test_data = pd.concat((X_test, y_test), axis=1).sample(frac=1).reset_index(drop=True).astype(str)
     
     
     # saving the file names as df as we will utilize them data loader
@@ -87,8 +87,12 @@ def get_data(config_path, param_path):
                            stem=params['preprocess']['stem'], stem_type=params['preprocess']['stem_type'], 
                            lemm=params['preprocess']['lemm'], lemm_type=params['preprocess']['lemm_type'])
     
-    
+    no_of_files_cnt = 0
     def write_file(row):
+        nonlocal no_of_files_cnt
+        no_of_files_cnt+=1
+        if no_of_files_cnt%1000==0:
+            print(f"No of files done {no_of_files_cnt}")
         current_file = os.path.join(source_data_dir, row['class'], row['file_name'])
         text = read_txt_file(path_to_file_name=current_file)
         text = preproc.transform(text) 

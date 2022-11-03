@@ -46,19 +46,22 @@ class DLModel(nn.Module):
 
     def forward(self, x):
         batch_size = x.size(0)
-        h0 = torch.zeros(self.n_layers, batch_size, self.hidden_dim).to(self.device)
-        c0 = torch.zeros(self.n_layers, batch_size, self.hidden_dim).to(self.device)
+        # h0 = torch.zeros(self.n_layers, batch_size, self.hidden_dim).to(self.device)
+        # c0 = torch.zeros(self.n_layers, batch_size, self.hidden_dim).to(self.device)
 
         #print('x shape', x.shape)
         x = self.embed(x)
         #print('here1', x.shape)
 
         if self.model_name=='LSTM':
-            out, (h1, c1) = self.lstm(x, (h0,c0))
+            # out, (h1, c1) = self.lstm(x, (h0,c0))  # if we dont porovide h0, c0 by default it will be zeros
+            out, (h1, c1) = self.lstm(x)
         elif self.model_name=='RNN':
-            out, h1 = self.rnn(x, h0)
+            # out, h1 = self.rnn(x, h0)
+            out, h1 = self.rnn(x)
         elif self.model_name=='GRU':
-            out, h1 = self.gru(x, h0)  #h1 is the size of units in the output layer of rnn
+            # out, h1 = self.gru(x, h0)  #h1 is the size of units in the output layer of rnn'
+            out, h1 = self.gru(x)
 
         # Do this if you want to take all the LSTM layers output and feed it to the fc layer
         if self.take_output_of_all_lstm:

@@ -22,6 +22,7 @@ import logging
 import os 
 import mlflow 
 import shutil
+import itertools
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -57,9 +58,30 @@ def test_metrics(model, device, valid_loader):
 
 
 
-
-
 def train(config_path, param_path):
+    config = read_yaml(config_path)
+    params = read_yaml(param_path)
+
+    train_hyper_params_keys = list(params['models']['DL']['params'].keys())
+    train_hyper_params_values = list(params['models']['DL']['params'].values())
+
+    cnt = 0
+    for train_hyper_params_value in list(itertools.product(*train_hyper_params_values)):
+        # cnt+=1 
+        # if cnt%3!=0:
+        #     continue 
+        print(f"Count is {cnt}")
+        t1 = time.time()
+        train_hyper_params = dict(zip(train_hyper_params_keys, train_hyper_params_value))
+        train_each_hyperparam(config_path, param_path, train_hyper_params)
+        print("\n\n", train_hyper_params['model_name'], train_hyper_params['epochs'], time.time() - t1)
+
+    print("DL training is done")
+
+
+
+
+def train_each_hyperparam(config_path, param_path, train_hyper_params):
     config = read_yaml(config_path)
     params = read_yaml(param_path)
     
@@ -67,29 +89,27 @@ def train(config_path, param_path):
     count_encoder = read_pickle_file(os.path.join(config['artifacts']['ENCODERS']['encoder_dir_name'], 
                                                   config['artifacts']['ENCODERS']['count_encoder']))
     vocab_size = len(count_encoder) + 2 
-    
-    embedding_dim = params['models']['DL']['params']['embedding_dim']
-    hidden_dim = params['models']['DL']['params']['hidden_dim']
-    n_layers = params['models']['DL']['params']['n_layers']
-    drop_prob = params['models']['DL']['params']['drop_proba']
-    model_name = params['models']['DL']['params']['model_name']
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    bidirectional = params['models']['DL']['params']['bidirectional']
-    seq_length = params['models']['DL']['params']['seq_length']
-    batch_size = params['models']['DL']['params']['batch_size']
-    take_all_layers_output = params['models']['DL']['params']['take_all_layers_output']
-    batch_first = params['models']['DL']['params']['batch_first']
-    epochs = params['models']['DL']['params']['epochs']
-    lr = params['models']['DL']['params']['lr']
-    output_size = params['models']['DL']['params']['output_size']
+
+    print(f">>>>>>>>>>>>>>>>>>>>>{device}<<<<<<<<<<<<<<<<<<<<<<<<")
     
+    embedding_dim = train_hyper_params['embedding_dim'] 
+    hidden_dim = train_hyper_params['hidden_dim']
+    n_layers = train_hyper_params['n_layers']
+    drop_prob = train_hyper_params['drop_proba']
+    model_name = train_hyper_params['model_name']
+    bidirectional = train_hyper_params['bidirectional']
+    seq_length = train_hyper_params['seq_length']
+    batch_size = train_hyper_params['batch_size']
+    take_all_layers_output = train_hyper_params['take_all_layers_output']
+    batch_first = train_hyper_params['batch_first']
+    epochs = train_hyper_params['epochs']
+    lr = train_hyper_params['lr']
     whole_model_name = ('' if bidirectional == False else 'B') + model_name + '_' + str(epochs) + 'Epochs_' + str(n_layers) + 'Layers_' + str(embedding_dim) + 'Embed_' + str(seq_length) + 'SeqLength_' + str(drop_prob) + 'DropProb_' + str(take_all_layers_output) + 'TAKE_OUTPUT_OF_ALL_LAYERS_OF_MODEL_' 
-    unique_categories = config['artifacts']['INPUT_CLASSES']
-    
-    
-    print(f"\n>>>>>>>>>>>>>>>>{device}<<<<<<<<<<<<<<<<<<<<<\n")
-    
-        
+    unique_categories = config['artifacts']['INPUT_CLASSES']    
+    output_size = len(unique_categories)
+
     train_loader = doc_classifier_dataloader(config_path, param_path, 
                                              csv_file_name = config['artifacts']['TRAIN_FILE_NAMES_CSV'],
                                              file_path = config['artifacts']['PREPROCESSED_DATA_DIR'], 
@@ -103,8 +123,6 @@ def train(config_path, param_path):
                                              seq_length=seq_length, 
                                              batch_size=batch_size)
     
-
-    
     # model, criterion, optimizer load 
     model = DLModel(vocab_size, output_size, embedding_dim, hidden_dim,
                    n_layers, drop_prob, batch_first=batch_first, 
@@ -115,9 +133,7 @@ def train(config_path, param_path):
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
     
-    
     train_loss_perEpoch, train_accuracy_perEpoch, test_loss_perEpoch, test_accuracy_perEpoch = [], [], [], []
-    
     
     for e in range(epochs):
         print('training epoch', e)
@@ -130,8 +146,11 @@ def train(config_path, param_path):
         for batch_idx, sample in enumerate(train_loader):
             data = torch.Tensor([i['text'] for i in sample])
             targets = torch.Tensor([i['class'].tolist() for i in sample])
+
             data = data.long().to(device)
             targets = targets.long().to(device)
+
+            # print(data.shape, targets.shape) 
 
             preds = model(data)
             loss = criterion(preds, targets)
@@ -179,76 +198,23 @@ def train(config_path, param_path):
                                                   train_loss_perEpoch, test_loss_perEpoch, 
                                                   train_accuracy_perEpoch, test_accuracy_perEpoch)    
     
-    model_params = params['models']['DL']['params']
-    model_params['model_name'] = ('' if bidirectional == False else 'B') + model_name
+    # model_params = params['models']['DL']['params']
+    train_hyper_params['model_name'] = ('' if bidirectional == False else 'B') + model_name
     
     del metric_dct['confusion_matrix']
     
-    
-    temp_dir = config['artifacts']['TEMP_MLFLOW_ARTIFACTS_DIR']
-    create_directory(dirs=[temp_dir])
-    
-    conf_mat_plot['fig'].savefig(os.path.join(temp_dir, conf_mat_plot['name']))
-    acc_loss_plot['fig'].savefig(os.path.join(temp_dir, acc_loss_plot['name']))
+    conf_mat_plot['fig'].savefig(conf_mat_plot['name'])
+    acc_loss_plot['fig'].savefig(acc_loss_plot['name'])
     
     with mlflow.start_run():
             mlflow.log_metrics(metric_dct)
-            mlflow.log_params(model_params)
+            mlflow.log_params(train_hyper_params)
             mlflow.pytorch.log_model(model, 'model')
-            mlflow.log_artifact(os.path.join(temp_dir, conf_mat_plot['name']), 'graphs')
-            mlflow.log_artifact(os.path.join(temp_dir, acc_loss_plot['name']), 'graphs')
+            mlflow.log_artifact(conf_mat_plot['name'], 'graphs')
+            mlflow.log_artifact(acc_loss_plot['name'], 'graphs')
             
-    shutil.rmtree(os.path.join(temp_dir))
-    
-    
-    
-    
-    
-    
-    
-def check(config_path, param_path):
-    config = read_yaml(config_path)
-    params = read_yaml(param_path)
-    
-    seq_length = params['models']['DL']['params']['seq_length']
-    batch_size = 3
-    
-    train_loader = doc_classifier_dataloader(config_path, param_path, 
-                                             csv_file_name = config['artifacts']['TRAIN_FILE_NAMES_CSV'],
-                                             file_path = config['artifacts']['PREPROCESSED_DATA_DIR'], 
-                                             data_type='train', model_type='DL', 
-                                             seq_length=seq_length, 
-                                             batch_size=batch_size)
-    
-    # data = next(iter(train_loader))
-    
-    # print(data[0]['class'].shape)
-    
-    # for batch_idx, (data, targets) in enumerate(train_loader):
-    #     print(batch_idx, data.shape, targets.shape)
-    
-    # for batch_idx, sample in enumerate(train_loader):
-    #     print(batch_idx, sample['text'], sample['class'])
-    #     break
-    
-    # for batch_idx, row in enumerate(train_loader):
-    #     try:
-    #         print('done/n')
-    #         data = torch.Tensor([i['text'] for i in row])
-    #         targets = torch.Tensor([i['class'] for i in row])
-    #         data = data.long()
-    #         targets = targets.long()
-    #     except: 
-    #         print(list(row[0].keys()))
-        
-    #     break
-    
-    for batch_idx, row in enumerate(train_loader):
-        
-        data = torch.Tensor([i['class'].tolist() for i in row])
-        break 
-    print('Okay to go') 
-    
+    os.remove(conf_mat_plot['name'])
+    os.remove(acc_loss_plot['name'])
 
 
 
@@ -263,7 +229,6 @@ if __name__ == '__main__':
     try:
         logging.info("\n>>>>> stage one started")
         train(config_path=parsed_args.config, param_path=parsed_args.params)
-        # check(config_path=parsed_args.config, param_path=parsed_args.params)
         logging.info("stage one completed! all the data are saved in local >>>>>\n\n")
     except Exception as e:
         logging.exception(e)
