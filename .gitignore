@@ -130,9 +130,15 @@ dmypy.json
 
 
 # push mlruns except the model weights
-/mlruns/*/*/artifacts/model/data/*
+# /mlruns/*/*/artifacts/model/data/*
 
 
 preprocessed_data
 source_data
 encoders
+mlruns 
+best_mlruns
+test_app_files
+test_app_files2
+dct_text.txt 
+best_mlruns.zip
