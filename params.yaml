@@ -1,13 +1,13 @@
 preprocess:
   remove_special: True
   remove_stop: True
-  stem: False  
-  lemm: True
+  stem: True  
+  lemm: False
   summy: False
   stem_type: Snow Ball
   lemm_type: Word Net
   test_size: 0.2
-  valid_Size: 0.15 
+  valid_size: 0.15 
 
 feature_extraction: 
   params:
@@ -16,30 +16,12 @@ feature_extraction:
 
 
 models: 
-  ML: 
-    naive_bayes: 
-      params: 
-        alpha: 0.5
-        fit_prior: True 
-    random_forest:  
-      params:  
-        n_estimators: 1000
-        max_depth: 7
-        min_samples_split: 7
-        random_state: 42
-        max_leaf_nodes: 5
-    svc: 
-      params: 
-        C: 0.1
-        degree: 3
-        random_state: 42 
 
-  
-  multi_ML:
+  ML:
     multi_ML_models: [naive_bayes, random_forest, svc]
     naive_bayes: 
       params: 
-        alpha: [0.1, 0.4, 0.8]
+        alpha: [0.1, 0.4, 0.85]
         fit_prior: [True]
     random_forest:  
       params:  
@@ -58,20 +40,19 @@ models:
 
   DL:
     params:  
-      model_name: LSTM 
-      bidirectional: True 
-      take_all_layers_output: True 
+      model_name: [LSTM, GRU] 
+      bidirectional: [True] 
+      take_all_layers_output: [True] 
       #word_embedding: GloVe 
-      seq_length: 300
-      batch_size: 32 
-      output_size: 20     # perfect example to explore more about reading one yaml inside another
-      hidden_dim: 512 
-      lr: 0.001
-      n_layers: 2
-      embedding_dim: 100 
-      drop_proba: 0.7
-      epochs: 1
-      batch_first: True 
+      seq_length: [300]
+      batch_size: [64] 
+      hidden_dim: [512] 
+      lr: [0.001]
+      n_layers: [2]
+      embedding_dim: [200] 
+      drop_proba: [0.7]
+      epochs: [18]
+      batch_first: [True]
 
 
       
@@ -85,7 +66,7 @@ models:
   
   DistilBert:
     params:
-      epochs: 1
-      lr: 0.00005
-      batch_size: 32
-      model_name: distilbert-base-uncased
+      epochs: [7]
+      lr: [0.00005, 0.0001]
+      batch_size: [16]
+      model_name: [distilbert-base-uncased]

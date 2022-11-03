@@ -59,10 +59,10 @@ stages:
       - preprocessed_data/train
       - preprocessed_data/test
 
-  stage_03_train_FastText:
-    cmd: python src/stage_03_train_FastText.py --config=config/config.yaml --params=params.yaml
-    deps:
-      - src/stage_03_train_FastText.py
+  stage_03_train_BERT:
+    cmd: python src/stage_03_train_BERT.py --config=config/config.yaml --params=params.yaml
+    deps: 
+      - src/stage_03_train_BERT.py
       - src/utils/data_loader.py
       - src/utils/metrics_plots.py
       - encoders/count_encoder.p
@@ -72,5 +72,8 @@ stages:
       - params.yaml
       - preprocessed_data/train
       - preprocessed_data/test
+
+
+
     
   
