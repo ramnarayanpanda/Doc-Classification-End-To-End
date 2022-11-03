@@ -1,21 +1,34 @@
 artifacts:
   ENCODERS:
+    bert_encoder: distill_bert_uncased_pretrained
+    bert_model: model
+    bert_tokenizer: tokenizer
     count_encoder: count_encoder.p
     encoder_dir_name: encoders
     label_encoder: label_encoder.p
     one_hot_encoder: one_hot_encoder.p
     tfidf_encoder: tfidf_encoder.p
-    
-    bert_encoder: distill_bert_uncased_pretrained  # above all are files, but this is a directory
-    bert_tokenizer: tokenizer
-    bert_model: model
-
   INPUT_CLASSES:
-  - business
-  - entertainment
-  - politics
-  - sport
-  - tech
+  - alt.atheism
+  - comp.graphics
+  - comp.os.ms-windows.misc
+  - comp.sys.ibm.pc.hardware
+  - comp.sys.mac.hardware
+  - comp.windows.x
+  - misc.forsale
+  - rec.autos
+  - rec.motorcycles
+  - rec.sport.baseball
+  - rec.sport.hockey
+  - sci.crypt
+  - sci.electronics
+  - sci.med
+  - sci.space
+  - soc.religion.christian
+  - talk.politics.guns
+  - talk.politics.mideast
+  - talk.politics.misc
+  - talk.religion.misc
   PREPROCESSED_DATA_DIR: preprocessed_data
   SOURCE_DATA_DIR: source_data
   TEMP_MLFLOW_ARTIFACTS_DIR: temp
